@@ -38,3 +38,8 @@ html {
 #proInfoLabel{
   vertical-align: top;
 }
+
+img{
+  /*width:75%;*/
+  height:50%;
+}
