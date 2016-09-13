@@ -39,7 +39,7 @@ html {
   vertical-align: top;
 }
 
-img{
-  /*width:75%;*/
-  height:50%;
+.content img{
+  width:350px;
+  height:350px;
 }

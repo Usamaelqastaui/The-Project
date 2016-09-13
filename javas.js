@@ -32,7 +32,7 @@ var products = {
       'name':'25',
       'category':'albums',
       'price':29.99,
-      'pic_url':'https://s-media-cache-ak0.pinimg.com/564x/a9/95/9c/a9959c17c8260650136fdc4a7d8bb218.jpg'
+      'pic_url':'https://goo.gl/Ks5c6y'
 
     },
     {
@@ -54,7 +54,7 @@ var add_to_page = function(item){
               '<h3>'+item.name+'</h3>'+
             '</div>'+
             '<div class="price">'+
-              '<p>'+item.price+'</p>'+
+              '<p>'+item.price+' EGP</p>'+
             '</div>'+
 
             '<p><button class="btn btn-primary add" type="button" data-toggle="button" aria-pressed="false" autocomplete="off">Add to cart</button><a href="#" class="btn btn-default" role="button">Details</a></p>'+
@@ -64,6 +64,7 @@ var add_to_page = function(item){
 var content='';
 var s =0;
 for(var key in products){
+  $('.dropdown-menu').append('<li><a href="#">'+key+'</a></li>')
   for (var i = 0; i < products[key].length; i++) {
     if (s === 0 || s%3 === 0) {
       content += '<div class="row">'
@@ -94,10 +95,10 @@ $('.dropdown-menu li').click(function(){
 })
 $('#go').click(function(){
   var term =document.getElementById('search').value;
+
   var res=[] ;
   for(var key in products){
     var fltr = _.filter(products[key],function(index){
-     console.log(index.name);
      return index.name === term;
       })
      res.push(fltr)
@@ -120,12 +121,12 @@ var addToCart = function(){
 
         $('#count').text(++m);
 
-        $(this).text("Remove from cart");
+        $(this).text("Remove from cart").removeClass('btn-primary');
       }
       else {
         $('#count').text(--m);
 
-        $(this).text("Add to cart");
+        $(this).text("Add to cart").addClass('btn-primary');
         if ($('#count').text() === "0") {
           $('#count').text("");
 
@@ -135,3 +136,31 @@ var addToCart = function(){
   });
 };
 addToCart();
+var signedAs = function(){
+  var user = JSON.parse(localStorage.getItem('UserName'));
+  $('.addUser').append('<p class="navbar-text navbar-right signedAs">Signed in as '+user+' </p>')
+}
+
+signedAs();
+// var addItem = function (name, image, price) {
+//     var oldItems = JSON.parse(localStorage.getItem('itemsArray')) || [];
+//
+//     var newItem = {
+//         'product-name': name,
+//         'product-image': image,
+//         'product-price': price
+//     };
+//
+//     oldItems.push(newItem);
+//
+//     localStorage.setItem('itemsArray', JSON.stringify(oldItems));
+// };
+//
+//
+// addItem('name1', 'image1', 'price1');
+//
+// console.log(JSON.parse(localStorage.getItem('itemsArray')));
+//
+// addItem('name2', 'image2', 'price2');
+//
+// console.log(JSON.parse(localStorage.getItem('itemsArray')));
