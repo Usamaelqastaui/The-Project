@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
     <form class='col-xs-offset-4 col-xs-4' action='mainPage.html'  method="GET" >
@@ -13,14 +17,19 @@
         <label for="exampleInputPassword1">Password</label>
         <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
       </div>
-      <button type="submit" class="btn btn-default btn-primary">Sign in</button>
+      <button type="submit" class="btn btn-default btn-primary signIn">Sign in</button>
+
     </form>
     <script src="https://code.jquery.com/jquery-2.1.1.js"></script>
+    <script src='http://underscorejs.org/underscore-min.js'></script>
+    <script src='javas.js'></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous">
+    </script>
     <script>
-    $('button').click(function(){
-      var username = document.getElementById('exampleInputEmail1').value;;
-      localStorage.setItem('UserName',JSON.stringify(username));
-    })
+    // $('.signIn').click(function(){
+    //   var username = document.getElementById('exampleInputEmail1').value;
+    //   localStorage.setItem('UserName',JSON.stringify(username));
+    // })
 
     </script>
   </body>
