@@ -2,13 +2,13 @@ var products = {
   'Books':[
     {
       'name':'Beautiful Ruins',
-      'category':'books',
+      'category':'Books',
       'price':24.99,
       'pic_url':' https://goo.gl/jTHWdy'
     },
     {
       'name':'catch-22',
-      'category':'books',
+      'category':'Books',
       'price':20,
       'pic_url':'https://goo.gl/9l5kff'
 
@@ -16,7 +16,7 @@ var products = {
     },
     {
       'name':'lolita',
-      'category':'books',
+      'category':'Books',
       'price':22,
       'pic_url':'https://goo.gl/ZdJT12'
 
@@ -24,40 +24,49 @@ var products = {
   'Albums':[
     {
       'name':'The Black Album',
-      'category':'albums',
+      'category':'Albums',
       'price':19.99,
       'pic_url':'https://i.ytimg.com/vi/DqDeH3hwxfw/maxresdefault.jpg'
     },
     {
       'name':'25',
-      'category':'albums',
+      'category':'Albums',
       'price':29.99,
       'pic_url':'https://goo.gl/Ks5c6y'
 
     },
     {
       'name':'Thriller',
-      'category':'albums',
+      'category':'Albums',
       'price':24,
       'pic_url':'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ1ihcYhpeLS0DP2xBq7K-eBeiTGcwHOPq-jDDYmLcHdPRSH-DIRg'
 
     }]
 
 };
-localStorage.setItem('all-products', JSON.stringify(products))
-
+if (!JSON.parse(localStorage.getItem('all-products'))) {
+  localStorage.setItem('all-products', JSON.stringify(products))
+}
+var stored = JSON.parse(localStorage.getItem('all-products'));
 var mainFunctions = {
-  'mainContent':function(){
+  'mainContent':function(inObject, awlMara){
     var content='';
     var s =0;
-    var stored = JSON.parse(localStorage.getItem('all-products'));
-    for(var key in stored){
-      $('.dropdown-menu').append('<li><a href="#">'+key+'</a></li>');
-      for (var i = 0; i < stored[key].length; i++) {
+
+    for(var key in inObject){
+      if (awlMara) {
+        $('.dropdown-menu').append('<li><a href="#">'+key+'</a></li>');
+      }
+
+      inObject[key].findIndex(function(a,b){
+        a.id = key+b;
+      })
+      for (var i = 0; i < inObject[key].length; i++) {
         if (s === 0 || s%3 === 0) {
           content += '<div class="row">'
         }
-        content += this.add_to_page(stored[key][i]);
+
+        content += this.add_to_page(inObject[key][i]);
         if ((s+1)%3 === 0) {
           content += '</div>'
         }
@@ -159,7 +168,7 @@ var mainFunctions = {
               '<div class="price">'+
                 '<p>'+item.price+' EGP</p>'+
               '</div>'+
-
+              '<button type="button" id='+item.id+'   class="btn btn-default btn-sm removeBtn hideBtn"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>'+
               '<p><button class="btn btn-primary add" type="button" data-toggle="button" aria-pressed="false" autocomplete="off">Add to cart</button><a href="#" class="btn btn-default" role="button">Details</a></p>'+
             '</div></div></div>';
     return x;
@@ -169,9 +178,6 @@ var mainFunctions = {
     $('.addUser').append('<p class="navbar-text navbar-right signedAs">Signed in as '+user+' </p>');
   },
   'addRemove':function(){
-    var removeBtn = '<button type="button" class="btn btn-default btn-sm removeBtn"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>'
-
-
     var addModal = '<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">'+
       '<div class="modal-dialog" role="document">'+
         '<div class="modal-content">'+
@@ -201,8 +207,30 @@ var mainFunctions = {
 
           '</div><div class="modal-footer">  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button><button type="button" class="btn btn-primary addItem">Add Item</button>  </div>  </div>  </div>  </div>'+
           '<button type="button" class="btn btn-default btn-lg btn-primary addBtn" data-toggle="modal" data-target="#myModal">  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>    </button>';
-    $('.thumbnail').append(removeBtn);
+
     $('body').append(addModal);
+    $('.removeBtn').removeClass('hideBtn');
+  },
+  'filteration': function(term, searchCategory, mode){
+    var res={};
+    if (mode) {
+      for(var key in stored){
+        var fltr = _.filter(stored[key],function(index){
+         return index[searchCategory] !== term;
+          })
+         res[key] = fltr;
+      }
+      localStorage.setItem('all-products', JSON.stringify(res));
+    } else {
+      for(var key in stored){
+        var fltr = _.filter(stored[key],function(index){
+         return index[searchCategory] === term;
+          })
+         res[key] = fltr;
+      }
+      mainFunctions.mainContent(res);
+    }
+    mainFunctions.addToCart();
   }
 }
 
@@ -213,52 +241,26 @@ $('.signIn').click(function(event){
   var username = document.getElementById('exampleInputEmail1').value;
   var password = document.getElementById('exampleInputPassword1').value;
   localStorage.setItem('UserName',JSON.stringify(username));
-  if (username === 'usamasaied' && password === '7070') {
+  if (username === 'usa' && password === '777') {
     mainFunctions.headerFooter();
-    mainFunctions.mainContent();
+    mainFunctions.mainContent(stored, 'ah');
     mainFunctions.addToCart();
     mainFunctions.signedAs();
     mainFunctions.addRemove();
-
   } else {
     mainFunctions.headerFooter();
-    mainFunctions.mainContent();
+    mainFunctions.mainContent(stored, 'ah');
     mainFunctions.addToCart();
     mainFunctions.signedAs();
+
     $('#go').click(function(){
       var term =document.getElementById('search').value;
+      mainFunctions.filteration(term, 'name')
 
-      var res=[] ;
-      for(var key in products){
-        var fltr = _.filter(products[key],function(index){
-         return index.name === term;
-          })
-         res.push(fltr)
-      }
-      var searchResults ='';
-      for (var i = 0; i < res.length; i++) {
-        for (var j = 0; j < res[i].length; j++) {
-        searchResults += mainFunctions.add_to_page(res[i][j]);
-        }
-      }
-      $('.content').html(searchResults)
-      mainFunctions.addToCart();
     });
     $('.dropdown-menu li').click(function(){
-      var m =0;
-      var filter ='';
-      for (var i = 0; i < products[$(this).text()].length; i++) {
-        if (m === 0 || m%3 === 0) {
-          filter += '<div class="row">'
-        }
-        filter += mainFunctions.add_to_page(products[$(this).text()][i]);
-        if ((m+1)%3 === 0) {
-          filter += '</div>'
-        }
-        m++
-      }
-      $('.content').html(filter);
-      mainFunctions.addToCart();
+      var term = $(this).text();
+      mainFunctions.filteration(term, 'category');
     });
   }
 
@@ -268,16 +270,17 @@ $('.signIn').click(function(event){
     var name = document.getElementById('proName').value;
     var price = document.getElementById('proPrice').value;
     var category = document.getElementById('proCategory').value;
-    // products[category] = products[category] || [];
-    // products[category].push({'category': category,'name': name, 'pic_url':image,'price':parseInt(price)});
     var items = JSON.parse(localStorage.getItem('all-products')) || {};
     items[category] = items[category] || [];
-    items[category].push({'category': category,'name': name, 'pic_url':image,'price':parseInt(price)});
+    items[category].unshift({'category': category,'name': name, 'pic_url':image,'price':parseInt(price)});
     localStorage.setItem('all-products', JSON.stringify(items));
 
     console.log(JSON.parse(localStorage.getItem('all-products')));
 
   })
+  $('.removeBtn').click(function(){
+    var selected = $(this).attr('id');
+    mainFunctions.filteration(selected, 'id', 'ah');
 
-
+  });
 })
