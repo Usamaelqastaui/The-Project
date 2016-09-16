@@ -56,11 +56,10 @@ var mainFunctions = {
     for(var key in inObject){
       if (awlMara) {
         $('.dropdown-menu').append('<li><a href="#">'+key+'</a></li>');
+        inObject[key].findIndex(function(a,b){
+          a.id = key+b;
+        });
       }
-
-      inObject[key].findIndex(function(a,b){
-        a.id = key+b;
-      })
       for (var i = 0; i < inObject[key].length; i++) {
         if (s === 0 || s%3 === 0) {
           content += '<div class="row">'
@@ -74,8 +73,12 @@ var mainFunctions = {
       }
     }
     $('.content').html(content);
+    $('.dropdown-menu li').click(function(){
+      var term = $(this).text();
+      mainFunctions.filteration(term, 'category');
+    });
   },
-  'headerFooter':function(){
+  'headerFooter':function(mm){
     var x = '<nav class="navbar navbar-default navbar-static-top">'+
           '<div class="container-fluid addUser">'+
             '<div class="navbar-header">'+
@@ -83,10 +86,11 @@ var mainFunctions = {
                 '<img src="" alt="Brand Img" />'+
               '</a>'+
               '<a class="navbar-brand" href="#">Brand name</a>'+
+
             '</div>'+
 
           '</div>'+
-          '<div class="container-fluid">'+
+          '<div class="container-fluid searchNav">'+
             '<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" >'+
 
               '<form class="navbar-form navbar-left">'+
@@ -134,6 +138,15 @@ var mainFunctions = {
 
         '</div>';
     $('body').html(x);
+    if (mm) {
+      $('.addUser').append('<button type="button" class="btn btn-default navbar-btn navbar-right signBtn">Sign in</button>');
+    };
+    $('#go').click(function(){
+      var term =document.getElementById('search').value;
+      mainFunctions.filteration(term, 'name')
+
+    });
+
   },
   'addToCart':function(){
     var m = document.querySelector('#count').textContent;
@@ -210,6 +223,15 @@ var mainFunctions = {
 
     $('body').append(addModal);
     $('.removeBtn').removeClass('hideBtn');
+    $('.removeBtn').click(function(){
+      if (confirm('Are you sure?')) {
+        var selected = $(this).attr('id');
+        mainFunctions.filteration(selected, 'id', 'ah');
+      }
+
+
+    });
+
   },
   'filteration': function(term, searchCategory, mode){
     var res={};
@@ -221,6 +243,10 @@ var mainFunctions = {
          res[key] = fltr;
       }
       localStorage.setItem('all-products', JSON.stringify(res));
+      stored = JSON.parse(localStorage.getItem('all-products'));
+      console.log(res);
+      mainFunctions.mainContent(res);
+      mainFunctions.addRemove();
     } else {
       for(var key in stored){
         var fltr = _.filter(stored[key],function(index){
@@ -231,56 +257,51 @@ var mainFunctions = {
       mainFunctions.mainContent(res);
     }
     mainFunctions.addToCart();
+  },
+  'signInPage':function(){
+    var x = '<form class="col-xs-offset-4 col-xs-4" action=""  method="GET" ><div class="form-group"><label for="exampleInputEmail1">Username</label><input type="text" class="form-control" id="exampleInputEmail1" placeholder="username"></div><div class="form-group"><label for="exampleInputPassword1">Password</label>'+
+        '<input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password"></div><button type="submit" class="btn btn-default btn-primary signIn">Sign in</button></form>';
+    $('.searchNav').hide();
+    $('.content').html(x);
+
   }
-}
+};
 
-
-
-$('.signIn').click(function(event){
-  event.preventDefault();
-  var username = document.getElementById('exampleInputEmail1').value;
-  var password = document.getElementById('exampleInputPassword1').value;
-  localStorage.setItem('UserName',JSON.stringify(username));
-  if (username === 'usa' && password === '777') {
+mainFunctions.headerFooter('ah');
+mainFunctions.mainContent(stored, 'ah');
+mainFunctions.addToCart();
+$('.signBtn').click(function(){
+  mainFunctions.signInPage();
+  $('.signIn').click(function(event){
+    event.preventDefault();
+    var username = document.getElementById('exampleInputEmail1').value;
+    var password = document.getElementById('exampleInputPassword1').value;
+    localStorage.setItem('UserName',JSON.stringify(username));
     mainFunctions.headerFooter();
     mainFunctions.mainContent(stored, 'ah');
     mainFunctions.addToCart();
     mainFunctions.signedAs();
-    mainFunctions.addRemove();
-  } else {
-    mainFunctions.headerFooter();
-    mainFunctions.mainContent(stored, 'ah');
-    mainFunctions.addToCart();
-    mainFunctions.signedAs();
+    if (username === 'usa' && password === '777') {
+      mainFunctions.addRemove();
+    }
+    $('.addItem').click(function(){
 
-    $('#go').click(function(){
-      var term =document.getElementById('search').value;
-      mainFunctions.filteration(term, 'name')
+      var image = document.getElementById('proImage').value;
+      var name = document.getElementById('proName').value;
+      var price = document.getElementById('proPrice').value;
+      var category = document.getElementById('proCategory').value;
+      var items = JSON.parse(localStorage.getItem('all-products')) || {};
+      items[category] = items[category] || [];
+      items[category].unshift({'category': category,'name': name, 'pic_url':image,'price':parseInt(price)});
+      localStorage.setItem('all-products', JSON.stringify(items));
 
-    });
-    $('.dropdown-menu li').click(function(){
-      var term = $(this).text();
-      mainFunctions.filteration(term, 'category');
-    });
-  }
+      console.log(JSON.parse(localStorage.getItem('all-products')));
 
-  $('.addItem').click(function(){
-
-    var image = document.getElementById('proImage').value;
-    var name = document.getElementById('proName').value;
-    var price = document.getElementById('proPrice').value;
-    var category = document.getElementById('proCategory').value;
-    var items = JSON.parse(localStorage.getItem('all-products')) || {};
-    items[category] = items[category] || [];
-    items[category].unshift({'category': category,'name': name, 'pic_url':image,'price':parseInt(price)});
-    localStorage.setItem('all-products', JSON.stringify(items));
-
-    console.log(JSON.parse(localStorage.getItem('all-products')));
-
+    })
+    // $('.removeBtn').click(function(){
+    //   var selected = $(this).attr('id');
+    //   mainFunctions.filteration(selected, 'id', 'ah');
+    //
+    // });
   })
-  $('.removeBtn').click(function(){
-    var selected = $(this).attr('id');
-    mainFunctions.filteration(selected, 'id', 'ah');
-
-  });
-})
+});
