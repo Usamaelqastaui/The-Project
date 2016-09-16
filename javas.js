@@ -47,6 +47,7 @@ var products = {
 if (!JSON.parse(localStorage.getItem('all-products'))) {
   localStorage.setItem('all-products', JSON.stringify(products))
 }
+
 var stored = JSON.parse(localStorage.getItem('all-products'));
 var mainFunctions = {
   'mainContent':function(inObject, awlMara){
@@ -75,7 +76,8 @@ var mainFunctions = {
     $('.content').html(content);
     $('.dropdown-menu li').click(function(){
       var term = $(this).text();
-      mainFunctions.filteration(term, 'category');
+      (term === 'See All')? mainFunctions.mainContent(stored):mainFunctions.filteration(term, 'category');
+      mainFunctions.addToCart();
     });
   },
   'headerFooter':function(mm){
@@ -85,7 +87,7 @@ var mainFunctions = {
               '<a class="navbar-brand" href="#">'+
                 '<img src="" alt="Brand Img" />'+
               '</a>'+
-              '<a class="navbar-brand" href="#">Brand name</a>'+
+              '<a class="navbar-brand" href="#">Shop EL-7ub</a>'+
 
             '</div>'+
 
@@ -106,6 +108,7 @@ var mainFunctions = {
                 '<li class="dropdown">'+
                   '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Category <span class="caret"></span></a>'+
                   '<ul class="dropdown-menu">'+
+                  '<li><a href = "#">See All</a></li>'+
                   '</ul>'+
                 '</li>'+
               '</ul>'+
@@ -144,7 +147,7 @@ var mainFunctions = {
     $('#go').click(function(){
       var term =document.getElementById('search').value;
       mainFunctions.filteration(term, 'name')
-
+      mainFunctions.addToCart();
     });
 
   },
@@ -240,11 +243,13 @@ var mainFunctions = {
         var fltr = _.filter(stored[key],function(index){
          return index[searchCategory] !== term;
           })
-         res[key] = fltr;
+        if (fltr.length) {
+        res[key] = fltr;
+        }
+
       }
       localStorage.setItem('all-products', JSON.stringify(res));
       stored = JSON.parse(localStorage.getItem('all-products'));
-      console.log(res);
       mainFunctions.mainContent(res);
       mainFunctions.addRemove();
     } else {
@@ -256,7 +261,7 @@ var mainFunctions = {
       }
       mainFunctions.mainContent(res);
     }
-    mainFunctions.addToCart();
+    // mainFunctions.addToCart();
   },
   'signInPage':function(){
     var x = '<form class="col-xs-offset-4 col-xs-4" action=""  method="GET" ><div class="form-group"><label for="exampleInputEmail1">Username</label><input type="text" class="form-control" id="exampleInputEmail1" placeholder="username"></div><div class="form-group"><label for="exampleInputPassword1">Password</label>'+
